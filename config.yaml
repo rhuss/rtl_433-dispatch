@@ -1,0 +1,21 @@
+mqtt:
+  broker: tcp://localhost:1883
+  user: mqttuser
+  password: s3cr3t
+command:
+  - ./rtl_433
+  - -f
+  - 868600k
+  - -b
+  - 500k
+  - -F
+  - json
+sensors:
+  wireless-mbus:
+    topic: water/main
+    device: multical21
+    name: watermeter
+    key: ABC123456XYZ
+  bresser-5in1:
+    topic: weather/bresser
+
