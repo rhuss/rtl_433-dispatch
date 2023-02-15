@@ -1,4 +1,4 @@
-module tichny.org/rtlsdr-dispatch
+module tichny.org/rtl_433-dispatch
 
 go 1.19
 
