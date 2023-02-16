@@ -3,10 +3,13 @@ package main
 import (
 	"fmt"
 	"gopkg.in/yaml.v2"
+	"log"
 	"os"
 )
 
 type ConfigMap map[interface{}]interface{}
+
+var Debug = false
 
 func readConfigFile(filename string) (ConfigMap, error) {
 	data, err := os.ReadFile(filename)
@@ -17,6 +20,10 @@ func readConfigFile(filename string) (ConfigMap, error) {
 	var config ConfigMap
 	if err := yaml.Unmarshal(data, &config); err != nil {
 		return nil, fmt.Errorf("Error parsing YAML: %v\n", err)
+	}
+
+	if config["debug"] != nil && config["debug"] == "true" {
+		Debug = true
 	}
 	return config, nil
 }
@@ -60,4 +67,14 @@ func getConfigSlice(m ConfigMap, key ...string) ([]string, bool) {
 		}
 	}
 	return strings, true
+}
+
+func debug(args ...string) {
+	if Debug {
+		if len(args) > 1 {
+			log.Printf(args[0], args[1:])
+		} else {
+			log.Println(args)
+		}
+	}
 }

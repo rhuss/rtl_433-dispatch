@@ -42,7 +42,7 @@ func publish(client mqtt.Client, topic string, payload RtlSdrMessage) error {
 		return err
 	}
 	// Publish message to MQTT broker
-
+	debug("Sent: %s", string(jsonData))
 	token := client.Publish(topic, 0, false, jsonData)
 	token.WaitTimeout(10 * time.Second)
 	return token.Error()

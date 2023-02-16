@@ -40,6 +40,7 @@ func main() {
 				fmt.Println("error parsing json:", err)
 				continue
 			}
+			debug("Received: %s", line)
 			err = dispatch(mqttClient, config, data)
 			if err != nil {
 				log.Printf("error while dispatching: %v\n", err)
