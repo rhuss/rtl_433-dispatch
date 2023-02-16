@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -65,7 +64,6 @@ func decodeWmBusTelegram(config ConfigMap, message RtlSdrMessage) (RtlSdrMessage
 		device,
 		idS,
 		key}
-	log.Printf("Exec: %v", args)
 	telegramDecode, err := execute(args)
 
 	if err != nil {
