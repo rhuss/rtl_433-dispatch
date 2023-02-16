@@ -22,7 +22,7 @@ func readConfigFile(filename string) (ConfigMap, error) {
 		return nil, fmt.Errorf("Error parsing YAML: %v\n", err)
 	}
 
-	if config["debug"] != nil && config["debug"] == "true" {
+	if config["debug"] != nil && config["debug"] == true {
 		Debug = true
 	}
 	return config, nil
