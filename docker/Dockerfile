@@ -1,5 +1,5 @@
 FROM alpine AS build
-RUN apk add --no-cache alpine-sdk gcc linux-headers ncurses-dev librtlsdr-dev cmake libusb-dev bash
+RUN apk add --no-cache alpine-sdk gcc linux-headers ncurses-dev librtlsdr-dev cmake libusb-dev bash go
 RUN git clone -b add-hash-0x7c0e https://github.com/rhuss/wmbusmeters.git \
  && git clone https://github.com/merbanan/rtl_433.git \
  && git clone https://github.com/rhuss/rtl_433-dispatch.git
