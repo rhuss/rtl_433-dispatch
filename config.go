@@ -25,6 +25,7 @@ func readConfigFile(filename string) (ConfigMap, error) {
 	if config["debug"] != nil && config["debug"] == true {
 		Debug = true
 	}
+
 	return config, nil
 }
 

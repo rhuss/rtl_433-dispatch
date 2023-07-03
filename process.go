@@ -30,7 +30,7 @@ func pipe(args []string, outChan chan string, errChan chan error) {
 
 		scanner, cmd, err := runCommand(args)
 		if err != nil {
-			log.Printf("error executing command: %v", err)
+			log.Printf("error executing command '%s' : %v", strings.Join(args, " "), err)
 			continue
 		}
 		for scanner.Scan() {
@@ -38,13 +38,13 @@ func pipe(args []string, outChan chan string, errChan chan error) {
 		}
 
 		if err := scanner.Err(); err != nil {
-			log.Printf("error while scanning content: %v", err)
+			log.Printf("error while scanning content: '%s' : %v", strings.Join(args, " "), err)
 			continue
 		}
 
 		err = cmd.Wait()
 		if err != nil {
-			log.Printf("error waiting for command: %v", err)
+			log.Printf("error waiting for command: '%s' : %v", strings.Join(args, " "), err)
 			continue
 		}
 	}
