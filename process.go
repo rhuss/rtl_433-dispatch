@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"log"
 	"os/exec"
@@ -28,7 +29,7 @@ func pipe(args []string, outChan chan string, errChan chan error) {
 			return
 		}
 
-		scanner, cmd, err := runCommand(args)
+		scanner, stdErr, cmd, err := runCommand(args)
 		if err != nil {
 			log.Printf("error executing command '%s' : %v", strings.Join(args, " "), err)
 			continue
@@ -44,33 +45,39 @@ func pipe(args []string, outChan chan string, errChan chan error) {
 
 		err = cmd.Wait()
 		if err != nil {
-			log.Printf("error waiting for command: '%s' : %v", strings.Join(args, " "), err)
+			log.Printf("error waiting for command: '%s' : %v\nStderr:\n%s", strings.Join(args, " "), err, stdErr.String())
 			continue
 		}
 	}
 }
 
-func runCommand(args []string) (*bufio.Scanner, *exec.Cmd, error) {
+func runCommand(args []string) (*bufio.Scanner, *bytes.Buffer, *exec.Cmd, error) {
 	var extraArgs []string
 	if len(args) > 1 {
 		extraArgs = args[1:]
 	}
 	cmd := exec.Command(args[0], extraArgs...)
+
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		return nil, nil, fmt.Errorf("cannot create pipe: %v (args: %v)", err, args)
+		return nil, nil, nil, fmt.Errorf("cannot create stdout pipe: %v (args: %v)", err, args)
 	}
+
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+
 	scanner := bufio.NewScanner(stdout)
 
 	err = cmd.Start()
 	if err != nil {
-		return nil, nil, fmt.Errorf("cannot start command: %v (args: %v)", err, args)
+		return nil, nil, nil, fmt.Errorf("cannot start command: %v (args: %v)", err, args)
 	}
-	return scanner, cmd, nil
+
+	return scanner, &stderr, cmd, nil
 }
 
 func execute(args []string) (string, error) {
-	scanner, cmd, err := runCommand(args)
+	scanner, stdErr, cmd, err := runCommand(args)
 
 	if err != nil {
 		return "", err
@@ -82,12 +89,12 @@ func execute(args []string) (string, error) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		return "", err
+		return "", fmt.Errorf("Error executing '%s'\nStderr:\n%s\nError: %w", strings.Join(args, " "), stdErr.String(), err)
 	}
 
 	err = cmd.Wait()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("Error executing '%s'\nStderr:\n%s\nError: %w", strings.Join(args, " "), stdErr.String(), err)
 	}
 	return strings.Join(lines, ""), nil
 }
